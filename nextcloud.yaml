@@ -7,43 +7,66 @@ metadata:
 spec:
   containers:
     - name: nextcloud
-      image: nextcloud
+      image: sameersbn/nextcloud:11.0.1
+      args: ["app:nextcloud"]
       env:
         - name: TZ
-          value: Asia/Tokyo
-        - name: DOMAIN
-          value: 192.168.0.104
+          value: Asia/Kolkata
+        - name: DEBUG
+          value: "false"
+        - name: NEXTCLOUD_URL
+          value: http://192.168.0.104
         - name: NEXTCLOUD_ADMIN_USER
           value: admin
         - name: NEXTCLOUD_ADMIN_PASSWORD
           value: password
         - name: NEXTCLOUD_UPLOAD_MAX_FILESIZE
           value: 4G
-        - name: UPLOAD_MAX_FILE
+        - name: NEXTCLOUD_MAX_FILE_UPLOADS
           value: "20"
         - name: DB_TYPE
-          value: psql
-        - name: POSTGRES_HOST
+          value: pgsql
+        - name: DB_HOST
           value: postgresql
         - name: DB_PORT
           value: "5432"
-        - name: POSTGRES_USER
+        - name: DB_USER
           value: nextcloud
-        - name: POSTGRES_PASSWARD
+        - name: DB_PASS
           value: password
-        - name: POSTGRES_DB
+        - name: DB_NAME
           value: nextcloud_db
       ports:
-        - name: nextcloud
-          containerPort: 80
+        - name: php-fpm
+          containerPort: 9000
           protocol: TCP
       volumeMounts:
-        - mountPath: /var/www/html/data
+        - mountPath: /var/lib/nextcloud
           name: data
       livenessProbe:
         tcpSocket:
+          port: 9000
+        initialDelaySeconds: 180
+        timeoutSeconds: 1
+    - name: nginx
+      image: sameersbn/nextcloud:11.0.1
+      args: ["app:nginx"]
+      env:
+        - name: NEXTCLOUD_URL
+          value: http://192.168.0.104
+        - name: NEXTCLOUD_PHP_FPM_HOST
+          value: nextcloud
+        - name: NEXTCLOUD_PHP_FPM_PORT
+          value: "9000"
+      ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+      livenessProbe:
+        httpGet:
+          path: /
           port: 80
-        initialDelaySeconds: 60
+        initialDelaySeconds: 5
         timeoutSeconds: 1
   volumes:
     - name: data

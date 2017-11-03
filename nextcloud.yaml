@@ -11,7 +11,7 @@ spec:
       args: ["app:nextcloud"]
       env:
         - name: TZ
-          value: Asia/Kolkata
+          value: Asia/Tokyo
         - name: DEBUG
           value: "false"
         - name: NEXTCLOUD_URL
@@ -62,12 +62,6 @@ spec:
         - name: http
           containerPort: 80
           protocol: TCP
-      livenessProbe:
-        httpGet:
-          path: /
-          port: 80
-        initialDelaySeconds: 5
-        timeoutSeconds: 1
   volumes:
     - name: data
       persistentVolumeClaim:

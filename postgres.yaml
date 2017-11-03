@@ -20,13 +20,13 @@ spec:
           protocol: TCP
       volumeMounts:
         - mountPath: /var/lib/postgresql
-          name: data
+          name: postgres-data
       livenessProbe:
         tcpSocket:
           port: 5432
         initialDelaySeconds: 300
         timeoutSeconds: 5
   volumes:
-    - name: data
+    - name: postgres-data
       persistentVolumeClaim:
        claimName: nfs-nextcloud-claim1
